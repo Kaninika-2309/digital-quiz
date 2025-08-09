@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Quiz</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <h1>Digital Quiz</h1>
+
+  <div>
+    <label for="category">Category:</label>
+    <select id="category">
+      <!-- Categories loaded dynamically -->
+    </select>
+
+    <label for="amount">Number of Questions:</label>
+    <select id="amount">
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+    </select>
+
+    <button id="startQuiz">Start Quiz</button>
+  </div>
+
+  <div id="quizContainer"></div>
+  <button id="submitQuiz" style="display:none;">Submit Answers</button>
+  <div id="result"></div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
