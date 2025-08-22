@@ -14,14 +14,15 @@ def get_categories():
     return {cat['name']: cat['id'] for cat in categories}
 
 categories = get_categories()
-categories["Any Category"] = None  # Add option for any category
+categories["Any Category"] = None
 
-# Sidebar: Quiz options
+# Sidebar settings
 st.sidebar.header("Quiz Settings")
 category_name = st.sidebar.selectbox("Select Category", list(categories.keys()))
 amount = st.sidebar.slider("Number of Questions", 1, 20, 5)
 
-# Fetch quiz questions
+# Fetch questions
+@st.cache_data
 def fetch_quiz(category_id=None, amount=5):
     url = f'https://opentdb.com/api.php?amount={amount}&type=multiple'
     if category_id:
@@ -31,20 +32,23 @@ def fetch_quiz(category_id=None, amount=5):
 
 quiz_data = fetch_quiz(categories.get(category_name), amount)
 
-# Show quiz questions
-score = 0
 if quiz_data:
-    for i, q in enumerate(quiz_data, 1):
-        st.subheader(f"Q{i}: {q['question']}")
+    st.write(f"### Quiz: {len(quiz_data)} Questions")
+    user_answers = {}
+    
+    # Display all questions
+    for i, q in enumerate(quiz_data):
+        st.subheader(f"Q{i+1}: {q['question']}")
         options = q['incorrect_answers'] + [q['correct_answer']]
         random.shuffle(options)
-        answer = st.radio("Choose an answer:", options, key=i)
-        if st.button("Submit Answer", key=f"btn_{i}"):
-            if answer == q['correct_answer']:
-                st.success("✅ Correct!")
+        user_answers[i] = st.radio("Choose an answer:", options, key=f"q{i}")
+
+    # Single submit button
+    if st.button("Submit Quiz"):
+        score = 0
+        for i, q in enumerate(quiz_data):
+            if user_answers[i] == q['correct_answer']:
                 score += 1
-            else:
-                st.error(f"❌ Wrong! Correct: {q['correct_answer']}")
-    st.write(f"### Your Score: {score}/{len(quiz_data)}")
+        st.success(f"✅ You scored {score} out of {len(quiz_data)}")
 else:
     st.warning("No questions available. Try changing category or amount.")
